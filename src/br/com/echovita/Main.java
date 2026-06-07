@@ -16,9 +16,11 @@ public final class Main {
 
     public static void main(String[] args) {
         EchoVitaLog.inicializar();
-        ModoExecucao modo = perguntarModoTerminal();
+        Scanner scanner = new Scanner(System.in);
+        ModoExecucao modo = perguntarModo(scanner);
         if (modo == ModoExecucao.GUI) {
             EchoVitaLog.acao("Modo de execução selecionado | Interface Gráfica");
+            scanner.close();
             try {
                 UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
             } catch (Exception ignored) {
@@ -27,12 +29,12 @@ public final class Main {
             SwingUtilities.invokeLater(() -> new EchoVitaFrame().setVisible(true));
         } else {
             EchoVitaLog.acao("Modo de execução selecionado | Terminal");
-            new MenuConsole().executar();
+            new MenuConsole(scanner).executar();
+            scanner.close();
         }
     }
 
-    private static ModoExecucao perguntarModoTerminal() {
-        Scanner scanner = new Scanner(System.in);
+    private static ModoExecucao perguntarModo(Scanner scanner) {
         System.out.println("EchoVita — escolha o modo de execução");
         System.out.println("1 — Interface Gráfica");
         System.out.println("2 — Terminal");
@@ -41,17 +43,14 @@ public final class Main {
         while (scanner.hasNextLine()) {
             String opcao = scanner.nextLine().trim();
             if ("1".equals(opcao) || "gui".equalsIgnoreCase(opcao)) {
-                scanner.close();
                 return ModoExecucao.GUI;
             }
             if ("2".equals(opcao) || "console".equalsIgnoreCase(opcao) || "terminal".equalsIgnoreCase(opcao)) {
-                scanner.close();
                 return ModoExecucao.CONSOLE;
             }
             System.out.print("Opção inválida. Escolha 1 ou 2: ");
         }
 
-        scanner.close();
         return ModoExecucao.CONSOLE;
     }
 

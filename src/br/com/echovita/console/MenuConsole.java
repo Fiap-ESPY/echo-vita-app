@@ -10,8 +10,7 @@ public final class MenuConsole {
     private final ConsoleInput input;
     private final ConsoleMenuHandler handler;
 
-    public MenuConsole() {
-        Scanner scanner = new Scanner(System.in);
+    public MenuConsole(Scanner scanner) {
         this.input = new ConsoleInput(scanner);
         this.handler = new ConsoleMenuHandler(this.input, new EchoVitaSystem());
     }
