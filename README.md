@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/assets/logo.png" alt="EchoVita — Monitoramento Acústico Preventivo" width="360"/>
+</p>
+
 # EchoVita — Monitoramento Acústico Preventivo
 
 Aplicação Java de console para o Challenge FIAP. Monitora ambientes rurais e de saúde por meio de sensores acústicos, detecta anomalias sonoras, gera alertas por criticidade e notifica perfis operacionais conforme limiar configurado.
@@ -247,4 +251,68 @@ O `Main` valida a estrutura base do projeto. O menu interativo de console e a or
 3. Analise um sinal com `analisarSinal("tosse repetida")` ou `analisarSinal("estresse no curral")`
 4. Crie um `Alerta` a partir da anomalia detectada e registre no local com `receberAlerta`
 5. Notifique um perfil (`Veterinario`, `Medico`, etc.) com `notificar(alerta)` respeitando o limiar
-6. Gere relatório do ambiente com `gerarRelatorio()`, `gerarRelatorio("tosse")` ou `gerarRelatorio("alto", 5)`
+6. Gere relatório do ambiente com `gerarRelatorio()`, `gerarRelatorio("tosse")` ou `gerarRelatorio("tosse", 5)`
+
+## Perguntas discursivas
+
+### 1. Onde a herança foi utilizada e por que faz sentido?
+
+Três hierarquias independentes:
+
+- **`Sensor` (abstrata) → `SensorRespiratorio`, `SensorComportamental`**
+  Todos os sensores compartilham `id`, `localizacao` e `ativo`, além dos métodos `ativar()` / `desativar()`. O que muda entre eles é a lógica de `analisarSinal()` e o `getTipoSensor()` — por isso são abstratos e cada subclasse os especializa.
+
+- **`LocalMonitorado` (abstrata) → `Fazenda`, `UnidadeSaude`**
+  Ambos os ambientes gerenciam listas de `Sensor` e `Alerta` e executam o ciclo de monitoramento (`monitorar()`). A diferença está na descrição e nas informações de negócio específicas (proprietário/cabeças vs. responsável/capacidade), isoladas em `getDescricao()`.
+
+- **`Usuario` (abstrata) → `Veterinario`, `Medico`, `ProprietarioRural`, `GestorOperacional`**
+  Toda a lógica de limiar de alerta, vinculação a locais e acúmulo de notificações vive em `Usuario`. Cada subclasse especializa apenas o que é profissionalmente distinto: `getCargo()` e `exibirPerfil()`.
+
+A herança faz sentido porque elimina duplicação de lógica compartilhada e expressa relações "é um" reais do domínio (um `Veterinario` é um `Usuario`; uma `Fazenda` é um `LocalMonitorado`).
+
+### 2. Qual foi a diferença entre a interface e a classe abstrata utilizadas no projeto?
+
+| Critério | Classe abstrata | Interface |
+|---|---|---|
+| Representa | O que algo **é** | O que algo **pode fazer** |
+| Possui estado | Sim (campos com valor) | Não |
+| Implementação parcial | Sim | Não (apenas contratos) |
+| Herança múltipla | Não | Sim |
+
+No projeto:
+
+- **Classes abstratas** (`Sensor`, `LocalMonitorado`, `Usuario`) carregam **estado** (ex.: `List<Alerta>` em `LocalMonitorado`, `NivelCriticidade limiarAlerta` em `Usuario`) e implementam comportamento concreto que todas as subclasses reutilizam.
+- **Interfaces** (`MonitorAmbiente`, `GeradorRelatorio`, `NotificadorAlerta`) definem **contratos de comportamento** sem estado. `GeradorRelatorio`, por exemplo, é implementada tanto por `Fazenda` quanto por `UnidadeSaude` — classes que já pertencem à hierarquia de `LocalMonitorado`. Sem interface, não seria possível garantir esse contrato de forma desacoplada.
+
+### 3. Onde ocorreu sobrescrita de métodos?
+
+Todos acompanham a annotation `@Override`:
+
+- `SensorRespiratorio` e `SensorComportamental` sobrescrevem `analisarSinal(String)` e `getTipoSensor()` de `Sensor`
+- `Fazenda` e `UnidadeSaude` sobrescrevem `getDescricao()` de `LocalMonitorado` e os três `gerarRelatorio` de `GeradorRelatorio`
+- `LocalMonitorado` sobrescreve `monitorar()`, `receberAlerta(Alerta)` e `getStatus()` de `MonitorAmbiente`
+- `Veterinario`, `Medico`, `ProprietarioRural` e `GestorOperacional` sobrescrevem `getCargo()` e `exibirPerfil()` de `Usuario`
+- `Usuario` sobrescreve `notificar(Alerta)` e `configurarLimiarAlerta(int)` de `NotificadorAlerta`
+- Todas as classes sobrescrevem `toString()` herdado de `Object`
+
+### 4. Onde ocorreu sobrecarga de métodos?
+
+A interface `GeradorRelatorio` define três assinaturas com o mesmo nome:
+
+```java
+String gerarRelatorio();                       // todos os alertas
+String gerarRelatorio(String filtro);          // filtra por tipo de anomalia
+String gerarRelatorio(String filtro, int limite); // filtra e limita quantidade
+```
+
+`Fazenda` e `UnidadeSaude` implementam as três versões. Isso permite que o chamador escolha o nível de detalhe sem precisar de métodos com nomes diferentes.
+
+### 5. Como esse projeto poderia evoluir futuramente para uma aplicação maior?
+
+- **Persistência**: substituir os dados demo por banco de dados relacional (ex.: SQLite ou PostgreSQL) para histórico de alertas e configurações por usuário
+- **API REST**: expor os casos de uso via Spring Boot, permitindo que apps mobile e dashboards web consumam os dados em tempo real
+- **Novos tipos de sensor**: sensores de temperatura, umidade e vibração, adicionados como novas subclasses de `Sensor` sem alterar o código existente (aberto para extensão, fechado para modificação)
+- **Notificação real**: integração com WhatsApp Business API e SMTP para envio efetivo de alertas, substituindo a simulação atual
+- **Análise preditiva**: módulo de machine learning treinado com padrões acústicos históricos para antecipar doenças antes de manifestações visíveis
+- **Multitenancy**: suporte a múltiplas organizações (fazendas distintas ou redes de saúde) com controle de acesso por perfil
+- **Interface web**: migrar ou complementar a GUI Swing com uma interface React/Vue, tornando o sistema acessível pelo navegador sem instalação local
