@@ -8,9 +8,9 @@ Sem framework e sem gerenciador de dependências — apenas Java puro com **cons
 
 - Beatriz Cortez — RM561431
 - Bruno Alves — RM563986
+- Davi de Jesus — RM566316
 - Gabriel Augusto — RM564126
-- Gustavo Moura — RM566190
-- Pedro Henrique — RM563281
+- Raphaela — RM572059
 
 ## Arquitetura em camadas
 
