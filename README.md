@@ -4,73 +4,48 @@
 
 # EchoVita — Monitoramento Acústico Preventivo
 
-Aplicação Java para a **Global Solution (GS) FIAP — 2ESPY 2026**, alinhada ao **ODS 9 — Indústria, Inovação e Infraestrutura**. Monitora ambientes rurais e de saúde por meio de sensores acústicos, detecta anomalias sonoras, gera alertas por criticidade e notifica perfis operacionais conforme limiar configurado.
+Aplicação Java de console para o Challenge FIAP. Monitora ambientes rurais e de saúde por meio de sensores acústicos, detecta anomalias sonoras, gera alertas por criticidade e notifica perfis operacionais conforme limiar configurado.
 
-Sem framework e sem gerenciador de dependências — apenas Java puro com **console (Scanner)** e **interface gráfica (Swing)**.
-
-## Integrantes
-
-- Beatriz Cortez — RM561431
-- Bruno Alves — RM563986
-- Davi de Jesus — RM566316
-- Gabriel Augusto — RM564126
-- Raphaela — RM572059
+Sem framework e sem gerenciador de dependências — apenas Java puro.
 
 ## Arquitetura em camadas
 
 ```
 br.com.echovita
-├── Main.java                 → ponto de entrada (escolha GUI ou console)
-├── application/              → orquestração dos fluxos
-│   ├── EchoVitaSystem        → fachada com dados demo e casos de uso
-│   ├── EchoVitaLog           → logging centralizado
-│   └── PreviaNotificacao     → DTO de prévia de notificações
-├── console/                  → interação via terminal (Scanner)
-│   ├── MenuConsole           → loop do menu e roteamento
-│   ├── ConsoleMenuHandler    → ações de cada opção do menu
-│   └── ConsoleInput          → leitura e validação de entrada
-├── gui/                      → interface gráfica (Swing)
-│   └── EchoVitaFrame         → janela principal com combos, botões e relatórios
-├── domain/                   → modelo de domínio
-│   ├── alerta/
-│   │   ├── Alerta            → alerta preventivo com criticidade
-│   │   └── AnomaliaAcustica  → resultado da análise de sinal
-│   ├── enums/
-│   │   ├── TipoAnomalia      → tosse, estresse, ruído anômalo, etc.
-│   │   └── NivelCriticidade  → baixo, médio, alto
-│   ├── exception/
-│   │   └── EchoVitaException → exceção de regras de negócio
-│   ├── interfaces/
-│   │   ├── GeradorRelatorio  → relatórios com filtro e limite (sobrecarga)
-│   │   ├── MonitorAmbiente   → monitoramento e recebimento de alertas
-│   │   └── NotificadorAlerta → notificação e limiar de alerta
-│   ├── local/
-│   │   ├── LocalMonitorado   → classe abstrata (herança)
-│   │   ├── Fazenda           → ambiente rural / saúde animal
-│   │   └── UnidadeSaude      → clínica ou unidade pública
-│   ├── sensor/
-│   │   ├── Sensor            → classe abstrata (herança)
-│   │   ├── SensorRespiratorio
-│   │   └── SensorComportamental
-│   └── usuario/
-│       ├── Usuario           → classe abstrata (herança)
-│       ├── Veterinario
-│       ├── Medico
-│       ├── ProprietarioRural
-│       └── GestorOperacional
-└── resources/images/         → imagens para GUI (locais e usuários)
+├── Main.java                 → ponto de entrada
+└── domain/                   → modelo de domínio
+    ├── alerta/
+    │   ├── Alerta            → alerta preventivo com criticidade
+    │   └── AnomaliaAcustica  → resultado da análise de sinal
+    ├── enums/
+    │   ├── TipoAnomalia      → tosse, estresse, ruído anômalo, etc.
+    │   └── NivelCriticidade  → baixo, médio, alto
+    ├── interfaces/
+    │   ├── GeradorRelatorio  → relatórios com filtro e limite
+    │   ├── MonitorAmbiente   → monitoramento e recebimento de alertas
+    │   └── NotificadorAlerta → notificação e limiar de alerta
+    ├── local/
+    │   ├── LocalMonitorado   → classe abstrata (herança)
+    │   ├── Fazenda           → ambiente rural / saúde animal
+    │   └── UnidadeSaude      → clínica ou unidade pública
+    ├── sensor/
+    │   ├── Sensor            → classe abstrata (herança)
+    │   ├── SensorRespiratorio
+    │   └── SensorComportamental
+    └── usuario/
+        ├── Usuario           → classe abstrata (herança)
+        ├── Veterinario
+        ├── Medico
+        ├── ProprietarioRural
+        └── GestorOperacional
 ```
 
 ### Responsabilidades
 
 | Pacote | Responsabilidade |
 |--------|------------------|
-| `application` | Orquestra casos de uso, dados demo e logging |
-| `console` | Menu interativo, leitura de entrada e exibição de saída |
-| `gui` | Interface Swing com monitoramento, alertas, notificações e relatórios |
 | `domain.alerta` | Representação de anomalias detectadas e alertas gerados |
 | `domain.enums` | Tipos de anomalia acústica e níveis de criticidade |
-| `domain.exception` | Exceções de validação e regras de negócio |
 | `domain.interfaces` | Contratos de monitoramento, relatório e notificação |
 | `domain.local` | Ambientes monitorados, sensores associados e relatórios |
 | `domain.sensor` | Captação e análise polimórfica de sinais sonoros |
@@ -97,8 +72,8 @@ classDiagram
         class GeradorRelatorio {
             <<interface>>
             +gerarRelatorio() String
-            +gerarRelatorio(String filtro) String
-            +gerarRelatorio(String filtro, int limite) String
+            +gerarRelatorio(String) String
+            +gerarRelatorio(String, int) String
         }
     }
 
@@ -107,22 +82,18 @@ classDiagram
             <<abstract>>
             #nome String
             #tipo String
-            +getDescricao() String
+            +getDescricao()* String
             +adicionarSensor(Sensor) void
         }
         class Fazenda {
             -proprietario String
             -numeroCabecas int
             +gerarRelatorio() String
-            +gerarRelatorio(String) String
-            +gerarRelatorio(String, int) String
         }
         class UnidadeSaude {
             -responsavel String
             -capacidadeAtendimento int
             +gerarRelatorio() String
-            +gerarRelatorio(String) String
-            +gerarRelatorio(String, int) String
         }
     }
 
@@ -132,8 +103,8 @@ classDiagram
             #id String
             #localizacao String
             #ativo boolean
-            +analisarSinal(String) AnomaliaAcustica
-            +getTipoSensor() String
+            +analisarSinal(String)* AnomaliaAcustica
+            +getTipoSensor()* String
         }
         class SensorRespiratorio {
             -sensibilidade int
@@ -149,8 +120,8 @@ classDiagram
             #nome String
             #rm String
             #limiarAlerta NivelCriticidade
-            +exibirPerfil() String
-            +getCargo() String
+            +exibirPerfil()* String
+            +getCargo()* String
         }
         class Veterinario {
             -crmv String
@@ -187,12 +158,6 @@ classDiagram
         }
     }
 
-    namespace exception {
-        class EchoVitaException {
-            +EchoVitaException(String) void
-        }
-    }
-
     class Alerta {
         -id Long
         -sensorId String
@@ -220,7 +185,6 @@ classDiagram
     Medico --|> Usuario
     ProprietarioRural --|> Usuario
     GestorOperacional --|> Usuario
-    EchoVitaException --|> RuntimeException
     LocalMonitorado o-- "0..*" Sensor : sensores
     LocalMonitorado o-- "0..*" Alerta : alertas
     Sensor ..> AnomaliaAcustica : produz
@@ -259,35 +223,9 @@ java -cp out br.com.echovita.Main
 
 Ou abra o projeto na IDE com **source root** em `src` e execute `br.com.echovita.Main`.
 
-Na inicialização, escolha **1** para interface gráfica (Swing) ou **2** para menu no console.
-
-## Menu do sistema (console)
-
-| Opção | Ação |
-|------:|------|
-| **1** | Listar locais monitorados |
-| **2** | Exibir sensores de um local |
-| **3** | Executar monitoramento |
-| **4** | Exibir alertas de um local |
-| **5** | Notificar usuário (com prévia e confirmação) |
-| **6** | Gerar relatório (texto ou CSV) |
-| **7** | Exibir perfil do usuário |
-| **8** | Configurar limiar de alerta |
-| **0** | Sair |
-
-## Interface gráfica (Swing)
-
-A GUI oferece combos para usuário, local e limiar, além de botões para monitorar, exibir alertas, notificar, gerar relatório, exportar CSV e exibir perfil com imagens dos locais e usuários.
-
 ## Estado atual
 
-A aplicação está funcional com:
-
-- Modelo de domínio completo (herança, interfaces, classes abstratas, enums)
-- Orquestração via `EchoVitaSystem` com ambiente demo
-- Menu interativo no console e interface gráfica Swing
-- Monitoramento simulado, alertas, notificações por limiar e relatórios
-- Sobrecarga de métodos em `GeradorRelatorio` (`gerarRelatorio()`, `gerarRelatorio(String)`, `gerarRelatorio(String, int)`)
+O `Main` valida a estrutura base do projeto. O menu interativo de console e a orquestração completa dos fluxos estão previstos para as próximas entregas.
 
 ## Recursos orientados a objetos
 
@@ -295,7 +233,6 @@ A aplicação está funcional com:
 - **Herança e polimorfismo**: `Fazenda` e `UnidadeSaude` estendem `LocalMonitorado`; `SensorRespiratorio` e `SensorComportamental` estendem `Sensor` com `@Override` em `analisarSinal()` e `getTipoSensor()`
 - **Perfis de usuário**: `Veterinario`, `Medico`, `ProprietarioRural` e `GestorOperacional` especializam `Usuario` com `exibirPerfil()` e `getCargo()`
 - **Interfaces**: `MonitorAmbiente` ← `LocalMonitorado`; `GeradorRelatorio` ← `Fazenda` / `UnidadeSaude`; `NotificadorAlerta` ← `Usuario`
-- **Sobrecarga de métodos**: `GeradorRelatorio` expõe três assinaturas de `gerarRelatorio` implementadas em `Fazenda` e `UnidadeSaude`
 - **Enums**: `TipoAnomalia` e `NivelCriticidade` para classificação de eventos e priorização
 - **Composição**: `LocalMonitorado` agrega listas de `Sensor` e `Alerta`; sensores produzem `AnomaliaAcustica` que alimentam a criação de `Alerta`
 
@@ -315,3 +252,67 @@ A aplicação está funcional com:
 4. Crie um `Alerta` a partir da anomalia detectada e registre no local com `receberAlerta`
 5. Notifique um perfil (`Veterinario`, `Medico`, etc.) com `notificar(alerta)` respeitando o limiar
 6. Gere relatório do ambiente com `gerarRelatorio()`, `gerarRelatorio("tosse")` ou `gerarRelatorio("tosse", 5)`
+
+## Perguntas discursivas
+
+### 1. Onde a herança foi utilizada e por que faz sentido?
+
+Três hierarquias independentes:
+
+- **`Sensor` (abstrata) → `SensorRespiratorio`, `SensorComportamental`**
+  Todos os sensores compartilham `id`, `localizacao` e `ativo`, além dos métodos `ativar()` / `desativar()`. O que muda entre eles é a lógica de `analisarSinal()` e o `getTipoSensor()` — por isso são abstratos e cada subclasse os especializa.
+
+- **`LocalMonitorado` (abstrata) → `Fazenda`, `UnidadeSaude`**
+  Ambos os ambientes gerenciam listas de `Sensor` e `Alerta` e executam o ciclo de monitoramento (`monitorar()`). A diferença está na descrição e nas informações de negócio específicas (proprietário/cabeças vs. responsável/capacidade), isoladas em `getDescricao()`.
+
+- **`Usuario` (abstrata) → `Veterinario`, `Medico`, `ProprietarioRural`, `GestorOperacional`**
+  Toda a lógica de limiar de alerta, vinculação a locais e acúmulo de notificações vive em `Usuario`. Cada subclasse especializa apenas o que é profissionalmente distinto: `getCargo()` e `exibirPerfil()`.
+
+A herança faz sentido porque elimina duplicação de lógica compartilhada e expressa relações "é um" reais do domínio (um `Veterinario` é um `Usuario`; uma `Fazenda` é um `LocalMonitorado`).
+
+### 2. Qual foi a diferença entre a interface e a classe abstrata utilizadas no projeto?
+
+| Critério | Classe abstrata | Interface |
+|---|---|---|
+| Representa | O que algo **é** | O que algo **pode fazer** |
+| Possui estado | Sim (campos com valor) | Não |
+| Implementação parcial | Sim | Não (apenas contratos) |
+| Herança múltipla | Não | Sim |
+
+No projeto:
+
+- **Classes abstratas** (`Sensor`, `LocalMonitorado`, `Usuario`) carregam **estado** (ex.: `List<Alerta>` em `LocalMonitorado`, `NivelCriticidade limiarAlerta` em `Usuario`) e implementam comportamento concreto que todas as subclasses reutilizam.
+- **Interfaces** (`MonitorAmbiente`, `GeradorRelatorio`, `NotificadorAlerta`) definem **contratos de comportamento** sem estado. `GeradorRelatorio`, por exemplo, é implementada tanto por `Fazenda` quanto por `UnidadeSaude` — classes que já pertencem à hierarquia de `LocalMonitorado`. Sem interface, não seria possível garantir esse contrato de forma desacoplada.
+
+### 3. Onde ocorreu sobrescrita de métodos?
+
+Todos acompanham a annotation `@Override`:
+
+- `SensorRespiratorio` e `SensorComportamental` sobrescrevem `analisarSinal(String)` e `getTipoSensor()` de `Sensor`
+- `Fazenda` e `UnidadeSaude` sobrescrevem `getDescricao()` de `LocalMonitorado` e os três `gerarRelatorio` de `GeradorRelatorio`
+- `LocalMonitorado` sobrescreve `monitorar()`, `receberAlerta(Alerta)` e `getStatus()` de `MonitorAmbiente`
+- `Veterinario`, `Medico`, `ProprietarioRural` e `GestorOperacional` sobrescrevem `getCargo()` e `exibirPerfil()` de `Usuario`
+- `Usuario` sobrescreve `notificar(Alerta)` e `configurarLimiarAlerta(int)` de `NotificadorAlerta`
+- Todas as classes sobrescrevem `toString()` herdado de `Object`
+
+### 4. Onde ocorreu sobrecarga de métodos?
+
+A interface `GeradorRelatorio` define três assinaturas com o mesmo nome:
+
+```java
+String gerarRelatorio();                       // todos os alertas
+String gerarRelatorio(String filtro);          // filtra por tipo de anomalia
+String gerarRelatorio(String filtro, int limite); // filtra e limita quantidade
+```
+
+`Fazenda` e `UnidadeSaude` implementam as três versões. Isso permite que o chamador escolha o nível de detalhe sem precisar de métodos com nomes diferentes.
+
+### 5. Como esse projeto poderia evoluir futuramente para uma aplicação maior?
+
+- **Persistência**: substituir os dados demo por banco de dados relacional (ex.: SQLite ou PostgreSQL) para histórico de alertas e configurações por usuário
+- **API REST**: expor os casos de uso via Spring Boot, permitindo que apps mobile e dashboards web consumam os dados em tempo real
+- **Novos tipos de sensor**: sensores de temperatura, umidade e vibração, adicionados como novas subclasses de `Sensor` sem alterar o código existente (aberto para extensão, fechado para modificação)
+- **Notificação real**: integração com WhatsApp Business API e SMTP para envio efetivo de alertas, substituindo a simulação atual
+- **Análise preditiva**: módulo de machine learning treinado com padrões acústicos históricos para antecipar doenças antes de manifestações visíveis
+- **Multitenancy**: suporte a múltiplas organizações (fazendas distintas ou redes de saúde) com controle de acesso por perfil
+- **Interface web**: migrar ou complementar a GUI Swing com uma interface React/Vue, tornando o sistema acessível pelo navegador sem instalação local
