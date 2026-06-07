@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/assets/logo.png" alt="EchoVita — Monitoramento Acústico Preventivo" width="360"/>
+</p>
+
 # EchoVita — Monitoramento Acústico Preventivo
 
 Aplicação Java para a **Global Solution (GS) FIAP — 2ESPY 2026**, alinhada ao **ODS 9 — Indústria, Inovação e Infraestrutura**. Monitora ambientes rurais e de saúde por meio de sensores acústicos, detecta anomalias sonoras, gera alertas por criticidade e notifica perfis operacionais conforme limiar configurado.
