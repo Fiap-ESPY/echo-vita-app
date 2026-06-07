@@ -1,5 +1,7 @@
 package br.com.echovita.domain.usuario;
 
+import br.com.echovita.domain.exception.EchoVitaException;
+
 /**
  * Usuário veterinário autorizado a receber alertas da EchoVita.
  */
@@ -11,10 +13,10 @@ public class Veterinario extends Usuario {
     public Veterinario(String nome, String rm, String crmv, String especialidade) {
         super(nome, rm);
         if (crmv == null || crmv.isBlank()) {
-            throw new IllegalArgumentException("CRMV e obrigatório.");
+            throw new EchoVitaException("CRMV é obrigatório.");
         }
         if (especialidade == null || especialidade.isBlank()) {
-            throw new IllegalArgumentException("Especialidade e obrigatória.");
+            throw new EchoVitaException("Especialidade é obrigatória.");
         }
         this.crmv = crmv.trim();
         this.especialidade = especialidade.trim();
@@ -40,6 +42,7 @@ public class Veterinario extends Usuario {
                         + "Nome:                    %s%n"
                         + "RM:                      %s%n"
                         + "Limiar de alerta:        %s%n"
+                        + "Locais vinculados:       %s%n"
                         + "CRMV:                    %s%n"
                         + "Especialidade:           %s%n";
 
@@ -48,7 +51,8 @@ public class Veterinario extends Usuario {
                 this.getCargo(),
                 this.getNome(),
                 this.getRm(),
-                this.getLimiarAlerta().getDescricao(),
+                this.formatarLimiarAtual(),
+                this.formatarLocaisVinculados(),
                 this.crmv,
                 this.especialidade);
     }

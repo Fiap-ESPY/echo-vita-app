@@ -1,6 +1,7 @@
 package br.com.echovita.domain.sensor;
 
 import br.com.echovita.domain.alerta.AnomaliaAcustica;
+import br.com.echovita.domain.exception.EchoVitaException;
 
 /**
  * Classe abstrata que representa um sensor de captação instalado em ambiente monitorado.
@@ -14,10 +15,10 @@ public abstract class Sensor {
 
     protected Sensor(String id, String localizacao) {
         if (id == null || id.isBlank()) {
-            throw new IllegalArgumentException("ID do sensor é obrigatório.");
+            throw new EchoVitaException("ID do sensor é obrigatório.");
         }
         if (localizacao == null || localizacao.isBlank()) {
-            throw new IllegalArgumentException("Localização do sensor é obrigatória.");
+            throw new EchoVitaException("Localização do sensor é obrigatória.");
         }
         this.id = id.trim();
         this.localizacao = localizacao.trim();

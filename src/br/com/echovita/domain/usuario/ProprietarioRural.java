@@ -1,5 +1,7 @@
 package br.com.echovita.domain.usuario;
 
+import br.com.echovita.domain.exception.EchoVitaException;
+
 /**
  * Usuário proprietário rural autorizado a receber alertas da EchoVita em fazendas.
  */
@@ -11,10 +13,10 @@ public class ProprietarioRural extends Usuario {
     public ProprietarioRural(String nome, String rm, String nomeFazenda, String regiao) {
         super(nome, rm);
         if (nomeFazenda == null || nomeFazenda.isBlank()) {
-            throw new IllegalArgumentException("Nome da fazenda é obrigatório.");
+            throw new EchoVitaException("Nome da fazenda é obrigatório.");
         }
         if (regiao == null || regiao.isBlank()) {
-            throw new IllegalArgumentException("Região é obrigatória.");
+            throw new EchoVitaException("Região é obrigatória.");
         }
         this.nomeFazenda = nomeFazenda.trim();
         this.regiao = regiao.trim();
@@ -40,6 +42,7 @@ public class ProprietarioRural extends Usuario {
                         + "Nome:                    %s%n"
                         + "RM:                      %s%n"
                         + "Limiar de alerta:        %s%n"
+                        + "Locais vinculados:       %s%n"
                         + "Fazenda:                 %s%n"
                         + "Região:                  %s%n";
 
@@ -48,7 +51,8 @@ public class ProprietarioRural extends Usuario {
                 this.getCargo(),
                 this.getNome(),
                 this.getRm(),
-                this.getLimiarAlerta().getDescricao(),
+                this.formatarLimiarAtual(),
+                this.formatarLocaisVinculados(),
                 this.nomeFazenda,
                 this.regiao);
     }

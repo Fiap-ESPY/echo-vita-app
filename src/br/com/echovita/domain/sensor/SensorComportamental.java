@@ -2,18 +2,26 @@ package br.com.echovita.domain.sensor;
 
 import br.com.echovita.domain.alerta.AnomaliaAcustica;
 import br.com.echovita.domain.enums.TipoAnomalia;
+import br.com.echovita.domain.exception.EchoVitaException;
+
+import java.util.Random;
 
 /**
  * Sensor especializado na detecção de padrões comportamentais e estresse.
  */
 public class SensorComportamental extends Sensor {
 
+    private static final TipoAnomalia[] TIPOS = {
+            TipoAnomalia.ESTRESSE, TipoAnomalia.AGITACAO, TipoAnomalia.RUIDO_ANOMALO
+    };
+    private static final Random RANDOM = new Random();
+
     private final double raioCobertura;
 
     public SensorComportamental(String id, String localizacao, double raioCobertura) {
         super(id, localizacao);
         if (raioCobertura <= 0) {
-            throw new IllegalArgumentException("Raio de cobertura deve ser maior que zero.");
+            throw new EchoVitaException("Raio de cobertura deve ser maior que zero.");
         }
         this.raioCobertura = raioCobertura;
     }
@@ -26,19 +34,12 @@ public class SensorComportamental extends Sensor {
     @Override
     public AnomaliaAcustica analisarSinal(String som) {
         if (som == null || som.isBlank()) {
-            throw new IllegalArgumentException("Sinal sonoro é obrigatório.");
+            throw new EchoVitaException("Sinal sonoro é obrigatório.");
         }
-        String somNormalizado = som.trim().toLowerCase();
-        TipoAnomalia tipo;
-        if (somNormalizado.contains("estresse")) {
-            tipo = TipoAnomalia.ESTRESSE;
-        } else if (somNormalizado.contains("agitacao")) {
-            tipo = TipoAnomalia.AGITACAO;
-        } else {
-            tipo = TipoAnomalia.RUIDO_ANOMALO;
-        }
-        int intensidade = (int) Math.min(100, 30 + this.raioCobertura * 5);
-        int frequencia = (int) (this.raioCobertura * 2) + 5;
+        TipoAnomalia tipo = TIPOS[RANDOM.nextInt(TIPOS.length)];
+        int base = (int) Math.min(100, 30 + this.raioCobertura * 5);
+        int intensidade = Math.max(0, Math.min(100, base + RANDOM.nextInt(41) - 20));
+        int frequencia = RANDOM.nextInt(50) + 10;
         return new AnomaliaAcustica(tipo, intensidade, frequencia);
     }
 

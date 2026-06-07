@@ -2,6 +2,7 @@ package br.com.echovita.domain.alerta;
 
 import br.com.echovita.domain.enums.NivelCriticidade;
 import br.com.echovita.domain.enums.TipoAnomalia;
+import br.com.echovita.domain.exception.EchoVitaException;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -26,16 +27,16 @@ public class Alerta {
             NivelCriticidade nivelCriticidade
     ) {
         if (sensorId == null || sensorId.isBlank()) {
-            throw new IllegalArgumentException("ID do sensor é obrigatório.");
+            throw new EchoVitaException("ID do sensor é obrigatório.");
         }
         if (localizacao == null || localizacao.isBlank()) {
-            throw new IllegalArgumentException("Localização é obrigatória.");
+            throw new EchoVitaException("Localização é obrigatória.");
         }
         if (tipoAnomalia == null) {
-            throw new IllegalArgumentException("Tipo de anomalia é obrigatório.");
+            throw new EchoVitaException("Tipo de anomalia é obrigatório.");
         }
         if (nivelCriticidade == null) {
-            throw new IllegalArgumentException("Nível de criticidade é obrigatório.");
+            throw new EchoVitaException("Nível de criticidade é obrigatório.");
         }
         this.sensorId = sensorId.trim();
         this.localizacao = localizacao.trim();
