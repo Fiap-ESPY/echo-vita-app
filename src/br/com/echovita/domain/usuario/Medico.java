@@ -1,5 +1,7 @@
 package br.com.echovita.domain.usuario;
 
+import br.com.echovita.domain.exception.EchoVitaException;
+
 /**
  * Usuário médico autorizado a receber alertas da EchoVita em unidades de saúde.
  */
@@ -11,10 +13,10 @@ public class Medico extends Usuario {
     public Medico(String nome, String rm, String crm, String especialidade) {
         super(nome, rm);
         if (crm == null || crm.isBlank()) {
-            throw new IllegalArgumentException("CRM é obrigatório.");
+            throw new EchoVitaException("CRM é obrigatório.");
         }
         if (especialidade == null || especialidade.isBlank()) {
-            throw new IllegalArgumentException("Especialidade é obrigatória.");
+            throw new EchoVitaException("Especialidade é obrigatória.");
         }
         this.crm = crm.trim();
         this.especialidade = especialidade.trim();
@@ -40,6 +42,7 @@ public class Medico extends Usuario {
                         + "Nome:                    %s%n"
                         + "RM:                      %s%n"
                         + "Limiar de alerta:        %s%n"
+                        + "Locais vinculados:       %s%n"
                         + "CRM:                     %s%n"
                         + "Especialidade:           %s%n";
 
@@ -48,7 +51,8 @@ public class Medico extends Usuario {
                 this.getCargo(),
                 this.getNome(),
                 this.getRm(),
-                this.getLimiarAlerta().getDescricao(),
+                this.formatarLimiarAtual(),
+                this.formatarLocaisVinculados(),
                 this.crm,
                 this.especialidade);
     }

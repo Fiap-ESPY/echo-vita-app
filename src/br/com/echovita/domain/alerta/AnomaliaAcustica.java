@@ -1,6 +1,7 @@
 package br.com.echovita.domain.alerta;
 
 import br.com.echovita.domain.enums.TipoAnomalia;
+import br.com.echovita.domain.exception.EchoVitaException;
 
 /**
  * Representa uma anomalia sonora detectada após análise de sinal acústico.
@@ -13,13 +14,13 @@ public class AnomaliaAcustica {
 
     public AnomaliaAcustica(TipoAnomalia tipo, int intensidade, int frequencia) {
         if (tipo == null) {
-            throw new IllegalArgumentException("Tipo de anomalia é obrigatório.");
+            throw new EchoVitaException("Tipo de anomalia é obrigatório.");
         }
         if (intensidade < 0 || intensidade > 100) {
-            throw new IllegalArgumentException("Intensidade deve estar entre 0 e 100.");
+            throw new EchoVitaException("Intensidade deve estar entre 0 e 100.");
         }
         if (frequencia < 0) {
-            throw new IllegalArgumentException("Frequência não pode ser negativa.");
+            throw new EchoVitaException("Frequência não pode ser negativa.");
         }
         this.tipo = tipo;
         this.intensidade = intensidade;

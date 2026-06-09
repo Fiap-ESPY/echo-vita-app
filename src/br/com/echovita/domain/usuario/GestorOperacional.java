@@ -1,5 +1,7 @@
 package br.com.echovita.domain.usuario;
 
+import br.com.echovita.domain.exception.EchoVitaException;
+
 /**
  * Usuário gestor operacional responsável por ambientes monitorados.
  */
@@ -10,7 +12,7 @@ public class GestorOperacional extends Usuario {
     public GestorOperacional(String nome, String rm, String setor) {
         super(nome, rm);
         if (setor == null || setor.isBlank()) {
-            throw new IllegalArgumentException("Setor é obrigatório.");
+            throw new EchoVitaException("Setor é obrigatório.");
         }
         this.setor = setor.trim();
     }
@@ -35,6 +37,7 @@ public class GestorOperacional extends Usuario {
                         + "Nome:                    %s%n"
                         + "RM:                      %s%n"
                         + "Limiar de alerta:        %s%n"
+                        + "Locais vinculados:       %s%n"
                         + "Setor:                   %s%n";
 
         return String.format(
@@ -42,7 +45,8 @@ public class GestorOperacional extends Usuario {
                 this.getCargo(),
                 this.getNome(),
                 this.getRm(),
-                this.getLimiarAlerta().getDescricao(),
+                this.formatarLimiarAtual(),
+                this.formatarLocaisVinculados(),
                 this.setor);
     }
 
