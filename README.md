@@ -4,7 +4,7 @@
 
 # EchoVita — Monitoramento Acústico Preventivo
 
-Aplicação Java de console para o Challenge FIAP. Monitora ambientes rurais e de saúde por meio de sensores acústicos, detecta anomalias sonoras, gera alertas por criticidade e notifica perfis operacionais conforme limiar configurado.
+Aplicação Java de console para a GS FIAP. Monitora ambientes rurais e de saúde por meio de sensores acústicos, detecta anomalias sonoras, gera alertas por criticidade e notifica perfis operacionais conforme limiar configurado.
 
 Sem framework e sem gerenciador de dependências — apenas Java puro.
 
@@ -222,10 +222,6 @@ java -cp out br.com.echovita.Main
 ```
 
 Ou abra o projeto na IDE com **source root** em `src` e execute `br.com.echovita.Main`.
-
-## Estado atual
-
-O `Main` valida a estrutura base do projeto. O menu interativo de console e a orquestração completa dos fluxos estão previstos para as próximas entregas.
 
 ## Recursos orientados a objetos
 
